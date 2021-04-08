@@ -340,7 +340,6 @@ def lucas_sequence(len)
         newVal = prevSeq[-2] + prevSeq[-1]
         return prevSeq << newVal
     end
-
 end
 
 p "------------------lucas_sequence------------------"
