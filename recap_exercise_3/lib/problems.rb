@@ -329,17 +329,28 @@ p multiply(-3, 6)       # => -18
 # lucas_sequence(3)   # => [2, 1, 3]
 # lucas_sequence(6)   # => [2, 1, 3, 4, 7, 11]
 # lucas_sequence(8)   # => [2, 1, 3, 4, 7, 11, 18, 29]
-# def lucasSequence(len)
-#     seq = []
-#     case len
-#     when 0 return seq
-#     when 1 return [2]
-#     when 2 return [2, 1]
-#     else
-#         lucasSequence()
-#     end
+def lucas_sequence(len)
+    seq = []
+    case len
+    when 0 then return seq
+    when 1 then return [2]
+    when 2 then return [2, 1]
+    else
+        prevSeq = lucas_sequence(len-1)
+        newVal = prevSeq[-2] + prevSeq[-1]
+        return prevSeq << newVal
+    end
 
-# end
+end
+
+p "------------------lucas_sequence------------------"
+p lucas_sequence(0)   # => []
+p lucas_sequence(1)   # => [2]    
+p lucas_sequence(2)   # => [2, 1]
+p lucas_sequence(3)   # => [2, 1, 3]
+p lucas_sequence(6)   # => [2, 1, 3, 4, 7, 11]
+p lucas_sequence(8)   # => [2, 1, 3, 4, 7, 11, 18, 29]
+
 
 # The Fundamental Theorem of Arithmetic states that every positive integer 
 # is either a prime or can be represented as a product of prime numbers.
@@ -358,5 +369,14 @@ p multiply(-3, 6)       # => -18
 # prime_factorization(11)     # => [11]
 # prime_factorization(2017)   # => [2017]
 def prime_factorization(num)
-
+    #return [num] if prime?(num)
 end
+
+p "------------------prime_factorization------------------"
+# p prime_factorization(12)     # => [2, 2, 3]
+# p prime_factorization(24)     # => [2, 2, 2, 3]
+# p prime_factorization(25)     # => [5, 5]
+# p prime_factorization(60)     # => [2, 2, 3, 5]
+#  p prime_factorization(7)      # => [7]
+# p prime_factorization(11)     # => [11]
+# p prime_factorization(2017)   # => [2017]
