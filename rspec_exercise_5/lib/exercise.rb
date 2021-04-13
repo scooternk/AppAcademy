@@ -81,5 +81,20 @@ def max_tie_breaker(array, prc, &block)
 end
 
 def silly_syllables(sentence)
+    vowels = "aeiou"
+    vowel_regex = /[aeiou]/
+    new_sentence = []
+    
+    sentence.split(" ").each do |word|
+        if word.count(vowels) >= 2
+            pieces = word.split(vowel_regex) #split word on vowels
+            w = word.sub(pieces[0], "") #remove all chars before first vowel
+            w = w.sub(pieces[-1], "") if !word[-1].index(vowel_regex) # remove all after last vowel, if word doesn't end in vowel
+            new_sentence << w
+        else
+            new_sentence << word
+        end
+    end
 
+    new_sentence.join(" ")
 end
