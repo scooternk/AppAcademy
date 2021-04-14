@@ -1,50 +1,37 @@
 # assumption: ea array is of same length
 def zip(*arrays)
-    new_array = []
-    
-    (0...arrays[0].length).each do |i|
-        sub = []
-        arrays.each {|a| sub << a[i]}
-        new_array << sub
-    end
-    p new_array
-    new_array
+     zip_to_length(arrays.first.length, arrays)
 end
 
-def prizz_proc(array, prc1, prc2)
-    true_eles = []
-    array.each {|e| true_eles << e if prc1.call(e) ^ prc2.call(e)}
-    true_eles
+# args are [length, [arrays...]]
+# all args get gobbled into *arrays
+# to get our array of arrays, need to index into arrays
+def zip_to_length(length, *arrays)
+    (0...length).map do |i|
+        arrays[-1].map { |array| array[i] }
+    end
+end
+
+def prizz_proc(array, tie_breaker1, tie_breaker2)
+    array.select { |e| tie_breaker1.call(e) ^ tie_breaker2.call(e) }
 end
 
 def zany_zip(*arrays)
-    max_len = arrays.max { |x,y| x.length <=> y.length }.length
-    
-    # pad out arrays as needed
-    arrays.each do |a|
-        while a.length < max_len do
-            a.push(nil)
-        end
-    end
-    zip(*arrays)
+    length = arrays.map(&:length).max
+    zip_to_length(length, arrays) 
 end
 
 def maximum(array, &block)
     return nil if array.empty?
-
-    evals = Hash.new
-
+    max = array.first
     array.each do |e|
-        result = block.call(e)
-        evals[result] = e # tie goes to the later array element
+        max = e if block.call(e) >= block.call(max)
     end
-
-    evals[evals.keys.max]
-end
+    max
+end 
 
 def my_group_by(array, &block)
     evals = Hash.new {|h, k| h[k] = []}
-
     array.each do |e|
         result = block.call(e)
         evals[result] << e # tie goes to the later array element
@@ -52,49 +39,42 @@ def my_group_by(array, &block)
     evals
 end
 
-def max_tie_breaker(array, prc, &block)
+def max_tie_breaker(array, tie_breaker, &block)
     return nil if array.empty?
 
-    evals = Hash.new
+    max = array.first
 
     array.each do |e|
-        result = block.call(e)
-        if evals[result] # have a tie (another element got here first) 
-            p "have tie between #{evals[result]} and #{e}"
-            # get vals to try and break tie; take largest result
-            orig = prc.call(evals[result])
-            current = prc.call(e)
-            
-            case orig <=> current
-            when -1
-                evals[result] = e
-            when 0
-                # do nothing, still tied -- keep the earlier array element
-            when 1
-                # do nothing -- orig wins the tie
-            end
-        else
-            evals[result] = e
+        cur_val = block.call(e)
+        max_val = block.call(max)
+        if cur_val > max_val
+            max = e
+        elsif cur_val == max_val
+            max = e if tie_breaker(e) > tie_breaker(max)
         end
     end
-    evals[evals.keys.max]
+    max
 end
 
 def silly_syllables(sentence)
-    vowels = "aeiou"
-    vowel_regex = /[aeiou]/
-    new_sentence = []
+    vowels = 'aeiou'
     
-    sentence.split(" ").each do |word|
-        if word.count(vowels) >= 2
-            pieces = word.split(vowel_regex) #split word on vowels
-            w = word.sub(pieces[0], "") #remove all chars before first vowel
-            w = w.sub(pieces[-1], "") if !word[-1].index(vowel_regex) # remove all after last vowel, if word doesn't end in vowel
-            new_sentence << w
+    new_sentence = sentence.split(' ').map do |word|
+        if word.count(vowels) < 2
+            word
         else
-            new_sentence << word
+            change_word(word)
         end
     end
 
     new_sentence.join(" ")
 end
+
+def change_word(word)
+    vowel_regex = /[aeiou]/
+    
+    pieces = word.split(vowel_regex) #split word on vowels
+    w = word.sub(pieces[0], "") #remove all chars before first vowel
+    w = w.sub(pieces[-1], "") if !word[-1].index(vowel_regex) # remove all after last vowel, if word doesn't end in vowel
+    w
+end   
