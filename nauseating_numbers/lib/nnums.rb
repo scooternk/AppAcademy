@@ -80,17 +80,9 @@ end
 # 4 7     3 0      7 7
 
 def matrix_addition(m1, m2)
-    height = m1.size
-    width = m1[0].size
-    sum = Array.new(height) {|i| Array.new(width)}
-
-    (0...height).each do |h|
-        (0...width).each do |w|
-            sum[h][w] = m1[h][w] + m2[h][w]
-        end
-    end
-    sum
+    matrix_addition_reloaded(m1, m2)
 end
+
 
 # Write a method mutual_factors that accepts any amount of numbers as arguments. 
 # The method should return an array containing all of the common divisors shared among the arguments. 
@@ -123,7 +115,18 @@ end
 # The method should return a new matrix representing the sum of the arguments. 
 # Matrix addition can only be performed on matrices of similar dimensions, so if all of the given matrices do not have the same "height" and "width", then return nil.
 def matrix_addition_reloaded(*matrices)
+    height = matrices[0].size
+    width = matrices[0][0].size
+    return nil if matrices.select {|m| m.size == height && m[0].size == width}.count != matrices.count
+    
+    sum = Array.new(height) {|i| Array.new(width, 0)}
 
+    (0...height).each do |h|
+        (0...width).each do |w|
+            matrices.each {|m| sum[h][w] += m[h][w]}
+        end
+    end
+    sum
 end
 
 # Write a method squarocol? that accepts a 2-dimensional array as an argument. 
