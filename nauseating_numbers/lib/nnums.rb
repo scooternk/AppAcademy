@@ -19,7 +19,13 @@ end
 # The method should return a new string where characters of the original string are repeated the number of times specified by the hash. 
 # If a character does not exist as a key of the hash, then it should remain unchanged.
 def rampant_repeats(s, h)
-
+    s.chars.map do |c|
+        if h[c]
+            c * h[c]
+        else
+            c
+        end
+    end.join("")
 end
 
 # Write a method perfect_square? that accepts a number as an argument. 
@@ -27,7 +33,13 @@ end
 # A perfect square is a number that is the product of some number multiplied by itself. 
 # For example, since 64 = 8 * 8 and 144 = 12 * 12, 64 and 144 are perfect squares; 35 is not a perfect square.
 def perfect_square?(num)
+    (1..num).each do |n|
+        product = n*n
+        return true if product == num
+        return false if product > num # short-circuit: too big now!
+    end
 
+    return false
 end
 
 ######################################################################################################################
@@ -38,7 +50,20 @@ end
 # For example, 24 is an anti-prime because it has more divisors than any positive number less than 24. 
 # Math Fact: Numbers that meet this criteria are also known as highly composite numbers.
 def anti_prime?(num)
+    divisor_count = num_factors(num)
 
+    (1...num).each do |n|
+        return false if num_factors(n) > divisor_count
+    end
+    return true
+end
+
+def num_factors(num)
+    find_factors(num).count
+end
+
+def find_factors(num)
+    (1..num).select {|n| num % n == 0}
 end
 
 # Let a 2-dimensional array be known as a "matrix". 
@@ -55,7 +80,16 @@ end
 # 4 7     3 0      7 7
 
 def matrix_addition(m1, m2)
+    height = m1.size
+    width = m1[0].size
+    sum = Array.new(height) {|i| Array.new(width)}
 
+    (0...height).each do |h|
+        (0...width).each do |w|
+            sum[h][w] = m1[h][w] + m2[h][w]
+        end
+    end
+    sum
 end
 
 # Write a method mutual_factors that accepts any amount of numbers as arguments. 
@@ -63,7 +97,9 @@ end
 # For example, the common divisors of 50 and 30 are 1, 2, 5, 10. 
 # You can assume that all of the arguments are positive integers.
 def mutual_factors(*nums)
-
+    all_factors = Hash.new
+    nums.each { |num| all_factors[num] = find_factors(num) }
+    all_factors.values[0].intersection(*all_factors.values[1..-1])
 end
 
 # The tribonacci sequence is similar to that of Fibonacci. 
@@ -74,7 +110,10 @@ end
 # 1, 1, 2, 4, 7, 13, ... and so on
 # Write a method tribonacci_number that accepts a number argument, n, and returns the n-th number of the tribonacci sequence.
 def tribonacci_number(n)
+    return 1 if n == 1 || n == 2
+    return 2 if n == 3
 
+     tribonacci_number(n-1) + tribonacci_number(n-2) + tribonacci_number(n-3)
 end
 
 ######################################################################################################################
