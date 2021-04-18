@@ -132,8 +132,25 @@ end
 # Write a method squarocol? that accepts a 2-dimensional array as an argument. 
 # The method should return a boolean indicating whether or not any row or column is completely filled with the same element. 
 # You may assume that the 2-dimensional array has "square" dimensions, meaning it's height is the same as it's width.
-def squarocol?(a)
+def squarocol?(array)
+    size = array.size
 
+    #check rows
+    array.each { |a| return true if a.all? {|e| e == a[0]} }
+
+    #check cols
+    (0...size).each do |i|
+        is_same = true
+        array.each do |a|
+            if a[i] != array[0][i] #item is not same as the first item in column
+                is_same = false
+                break
+            end
+        end
+        return true if is_same
+    end
+    
+    return false
 end
 
 # Pascal's triangle is a 2-dimensional array with the shape of a pyramid. 
@@ -150,7 +167,20 @@ end
 # Write a method pascals_triangle that accepts a positive number, n, as an argument 
 # and returns a 2-dimensional array representing the first n levels of pascal's triangle.
 def pascals_triangle(n)
+    triangle = [[1]]
 
+    (1...n).each do |lvl_idx| # levels of pyramid by array idx
+        current_lvl = []
+        prev_lvl = triangle[lvl_idx - 1] 
+
+        (0..lvl_idx).each do |pos| # elements of level
+            left = (pos == 0) ? 0 :  prev_lvl[pos - 1]
+            right = (pos == lvl_idx) ? 0 : prev_lvl[pos]
+            current_lvl[pos] = left + right
+        end
+        triangle << current_lvl
+    end
+    triangle
 end
 
 ######################################################################################################################
@@ -166,7 +196,31 @@ end
 # The first three Mersenne primes are 3, 7, and 31. 
 # Write a method mersenne_prime that accepts a number, n, as an argument and returns the n-th Mersenne prime.
 def mersenne_prime(n)
+    mprimes = []
 
+    i = 3
+    while mprimes.count < n
+        if prime? i
+            mprimes << i if mersenne? i
+        end
+        i += 1
+    end
+
+    mprimes[-1]
+end
+
+def prime?(num)
+    (2...num).each { |n| return false if (num % n == 0) }
+    true
+end
+
+def mersenne?(num)
+    (1...num).each do |i|
+        val = 2 ** i - 1
+        return false if val > num # short-circuit so we don't run all the way up to num
+        return true if num == val
+    end
+    false
 end
 
 # A triangular number is a number of the form (i * (i + 1)) / 2 where i is some positive integer. 
@@ -186,10 +240,29 @@ end
 # 3 + 1 + 20 = 24
 
 # Write a method triangular_word? that accepts a word as an argument and returns a boolean 
-# indicating whethe
-# A trr or not that word's number encoding is a triangular number. You can assume that the argument contains lowercase letters.
+# indicating whether or not that word's number encoding is a triangular number. You can assume that the argument contains lowercase letters.
 def triangular_word?(word)
+    encoded = encode(word)
+    triangular_num?(encoded)
+end
 
+def triangular_num?(num)
+    i = 1
+    tnum = 0
+    while tnum < num
+        tnum = (i * (i + 1)) / 2
+        return true if tnum == num
+        i += 1
+    end
+    false
+end
+
+def encode(word)
+    encoded = 0
+    word.chars.each do |c|
+        encoded += ('a'..'z').to_a.index(c) + 1
+    end
+    encoded
 end
 
 # Write a method consecutive_collapse that accepts an array of numbers as an argument. 
@@ -213,8 +286,31 @@ end
 
 # # example 2
 # [3, 5, 6, 2, 1] -> [3, 2, 1] -> [1]
+# TODO: possible to write recursively?
 def consecutive_collapse(nums)
+    found_pairs = true
+    collapsed = nums
 
+    while(found_pairs)
+        found_pairs = false
+        new_iterration = []
+
+        (0...collapsed.count-1).each do |i|
+            if consecutive?(collapsed[i], collapsed[i+1])
+                new_iterration.concat(collapsed[i+2..-1])
+                found_pairs = true
+               break
+            else
+                new_iterration << collapsed[i]
+            end
+        end
+        collapsed = new_iterration if found_pairs
+    end
+    collapsed
+end
+
+def consecutive?(n1, n2)
+    n1 == n2 -1 || n1 == n2 + 1
 end
 
 
@@ -237,5 +333,35 @@ end
 # When a smaller prime cannot be calculated, replace the element with nil.
 
 def pretentious_primes(a, n)
+    a.map do |ele|
+        if n > 0
+            nth_prime_greater_than(ele, n)
+        else
+            primes = primes_upto(ele-1)
+            primes[n]
+        end
+    end
+end
 
+def primes_upto(num)
+    primes = []
+    (2..num).each do |n|
+        primes << n if prime?(n)
+    end
+    primes
+end
+
+def nth_prime_greater_than(num, n)
+    i = num + 1
+    prime_count = 0
+    nth_prime = nil
+
+    while (prime_count < n)
+        if prime? i
+            nth_prime = i
+            prime_count += 1
+        end
+        i += 1
+    end
+    nth_prime
 end
