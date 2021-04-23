@@ -25,6 +25,16 @@ class Board
         @grid[row][col] = mark
     end
 
+    def legal_positions
+        legal = []
+        @grid.each_with_index do |row, i|
+            row.each_index do |j|
+                legal << [i,j] if @grid[i][j] == @@EMPTY_SPACE
+            end
+        end
+        legal
+    end
+
     def win_row?(mark)
         win_row_of_grid?(@grid, mark)
     end

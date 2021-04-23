@@ -1,18 +1,18 @@
 require './board.rb'
 require './human_player.rb'
+require './computer_player.rb'
 
 class Game
     attr_reader :board, :players
 
-    def initialize(size, *marks)
-        raise "Players must have unique marks" if marks != marks.uniq
-        raise "A minimum of two players is required" if marks.size < 2
+    def initialize(size, players)
+        raise "A minimum of two players is required" if players.size < 2
         
         @board = Board.new(size)
 
         @players = []
-        marks.each do |m|
-            @players << HumanPlayer.new(m)
+        players.each do |mark, isComp|
+            @players <<  (isComp ? ComputerPlayer.new(mark) : HumanPlayer.new(mark))
         end
         @current_player = @players[0]
     end
@@ -26,7 +26,7 @@ class Game
             @board.print
 
             begin
-                move = @current_player.get_position
+                move = @current_player.get_position(@board.legal_positions)
                 @board.place_mark(move, @current_player.mark)
             rescue StandardError => e
                 puts "#{e.message}"
