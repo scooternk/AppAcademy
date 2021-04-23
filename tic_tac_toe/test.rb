@@ -32,7 +32,7 @@ def check_board_state(b)
 end
 
 def test_out_of_bounds
-    b = Board.new
+    b = Board.new(3)
     b.place_mark([-1,0], :O)
     b.place_mark([0,-1], :O)
     b.place_mark([-1,-1], :O)
@@ -42,7 +42,7 @@ def test_out_of_bounds
 end
 
 def test_occupied_space
-    b = Board.new # 3x3
+    b = Board.new(3) # 3x3
 
     b.place_mark([1,2], :O)
     b.place_mark([1,2], :O)
@@ -50,7 +50,7 @@ end
 
 def test_partial_fill_no_win
     print "test_partial_fill_no_win: "
-    b = Board.new # 3x3
+    b = Board.new(3) # 3x3
     b.place_mark([0,0], :O)
     b.place_mark([2,1], :X)
     b.place_mark([1,0], :O)
@@ -62,7 +62,7 @@ end
 def test_full_fill_no_win
     print "test_full_fill_no_wins:"
     
-    b = Board.new # 3x3
+    b = Board.new(3) # 3x3
     b.place_mark([0,0], :X)
     b.place_mark([0,1], :O)
     b.place_mark([0,2], :O)
@@ -80,7 +80,7 @@ end
 def test_first_diagonal_win
     print "test_first_diagonal_win:"
     
-    b = Board.new # 3x3
+    b = Board.new(3) # 3x3
     b.place_mark([0,0], :O)
     b.place_mark([0,1], :O)
     b.place_mark([0,2], :X)
@@ -98,7 +98,7 @@ end
 def test_second_diagonal_win
     print "test_second_diagonal_win:"
     
-    b = Board.new
+    b = Board.new(3)
     b.place_mark([0,0], :O)
     b.place_mark([0,1], :O)
     b.place_mark([0,2], :X)
@@ -116,7 +116,7 @@ end
 def test_col_win
     print "test_col_win:"
   
-    b = Board.new
+    b = Board.new(3)
     b.place_mark([0,0], :X)
     b.place_mark([0,1], '_')
     b.place_mark([0,2], :X)
@@ -134,7 +134,7 @@ end
 def test_row_win
     print "test_row_win:"
   
-    b = Board.new
+    b = Board.new(3)
     b.place_mark([0,0], :X)
     b.place_mark([0,1], '_')
     b.place_mark([0,2], :X)
@@ -155,7 +155,7 @@ def spacer
 end
 
 
-b = Board.new # 3x3
+b = Board.new(3) # 3x3
 
 # test_out_of_bounds
 # test_occupied_space

@@ -1,8 +1,8 @@
 class Board
     @@EMPTY_SPACE = '_'
 
-    def initialize()
-        @grid = Array.new(3) {Array.new(3, @@EMPTY_SPACE)}
+    def initialize(size)
+        @grid = Array.new(size) {Array.new(size, @@EMPTY_SPACE)}
     end
 
     #position => [row, column]
@@ -42,8 +42,6 @@ class Board
 
     def win_diagonal?(mark)
         win = true
-        # center must be filled -- easy short-circuit
-        return false if @grid[1][1] != mark
         
         #start from NW corner
         @grid.each_with_index do |row, i|

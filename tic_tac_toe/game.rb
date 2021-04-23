@@ -2,17 +2,23 @@ require './board.rb'
 require './human_player.rb'
 
 class Game
-    attr_reader :board
+    attr_reader :board, :players
 
-    def initialize(p1mark, p2mark)
-        @board = Board.new()
-        @player1 = HumanPlayer.new(p1mark)
-        @player2 = HumanPlayer.new(p2mark)
-        @current_player = @player1
+    def initialize(size, *marks)
+        raise "Players must have unique marks" if marks != marks.uniq
+        raise "A minimum of two players is required" if marks.size < 2
+        
+        @board = Board.new(size)
+
+        @players = []
+        marks.each do |m|
+            @players << HumanPlayer.new(m)
+        end
+        @current_player = @players[0]
     end
 
-    def switch_player
-        @current_player = (@current_player == @player1) ? @player2 : @player1
+    def switch_turn
+        @current_player = @players.rotate![0]
     end
 
     def play
@@ -32,7 +38,7 @@ class Game
                 puts "Player #{@current_player.mark} WINS!!"
                 return
             else
-                switch_player
+                switch_turn
             end
         end
         @board.print
