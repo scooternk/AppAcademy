@@ -1,0 +1,43 @@
+
+load 'todo_board.rb'
+
+b = TodoBoard.new()
+
+
+mklist groceries
+
+mktodo groceries cheese 2019-10-25 foooooood
+mktodo groceries toothpaste 2019-10-23
+mktodo groceries candy 2019-10-31 sugar-free
+mktodo groceries shampoo 2019-10-25
+
+mklist home
+mktodo home windows 2021-09-01 replace
+mktodo home guest-bathroom 2021-06-01 sink
+
+print
+sort
+print
+swap 0 3
+print
+print 1
+priority
+down 0
+print
+up 3 2
+print
+
+
+load 'list.rb'
+l = List.new("Grocery List")
+l.add_item("dates", "2021-04-26", "buy dates")
+l.add_item("walnuts", "2021-04-20", "buy walnuts")
+l.add_item("oats", "2021-04-29", "buy steel cut oats")
+l.add_item("peanut butter", "2021-04-22", "organic creamy")
+l.add_item("red onion", "2021-03-19", "1 large")
+l.print
+
+l.sort_by_date!
+l.print
+
+l.print_full_item(0)
