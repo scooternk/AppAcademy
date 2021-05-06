@@ -1,8 +1,114 @@
-require_relative "board"
+class Board
+  def self.empty_grid
+    Array.new(9) do
+      Array.new(9) { Tile.new(0) }
+    end
+  end
 
-# People write terrible method names in real life.
-# On the job, it is your job to figure out how the methods work and then name them better.
-# Do this now.
+  def self.from_file(filename)
+    rows = File.readlines(filename).map(&:chomp)
+    tiles = rows.map do |row|
+      nums = row.split("").map { |char| Integer(char) }
+      nums.map { |num| Tile.new(num) }
+    end
+
+    self.new(tiles)
+  end
+
+  def initialize(grid = self.empty_grid)
+    @grid = grid
+  end
+
+  def [](pos)
+    x, y = pos
+    grid[x][y]
+  end
+
+  def []=(pos, value)
+    x, y = pos
+    tile = grid[x][y]
+    tile.value = value
+  end
+
+  def columns
+    rows.transpose
+  end
+
+  def render
+    puts "  #{(0..8).to_a.join(" ")}"
+    grid.each_with_index do |row, i|
+      puts "#{i} #{row.join(" ")}"
+    end
+  end
+
+  def rows
+    grid
+  end
+
+  def size
+    grid.size
+  end
+
+  def solved?
+    rows.all? { |row| solved_set?(row) } &&
+      columns.all? { |col| solved_set?(col) } &&
+      squares.all? { |square| solved_set?(square) }
+  end
+
+  def solved_set?(tiles)
+    nums = tiles.map(&:value)
+    nums.sort == (1..9).to_a
+  end
+
+  def square(idx)
+    tiles = []
+    x = (idx / 3) * 3
+    y = (idx % 3) * 3
+
+    (x...x + 3).each do |i|
+      (y...y + 3).each do |j|
+        tiles << self[[i, j]]
+      end
+    end
+
+    tiles
+  end
+
+  def squares
+    (0..8).to_a.map { |i| square(i) }
+  end
+
+  private
+  attr_reader :grid
+end
+
+class Tile
+  attr_reader :value
+
+  def initialize(value)
+    @value = value
+    @given = value == 0 ? false : true
+  end
+
+  def color
+    given? ? :blue : :red
+  end
+
+  def given?
+    @given
+  end
+
+  def to_s
+    value == 0 ? " " : value.to_s.colorize(color)
+  end
+
+  def value=(new_value)
+    if given?
+      puts "You can't change the value of a given tile."
+    else
+      @value = new_value
+    end
+  end
 
 class SudokuGame
   def self.from_file(filename)
@@ -14,69 +120,66 @@ class SudokuGame
     @board = board
   end
 
-  def get_position
-    p = nil
-    until p && valid_position?(p)
+  def get_pos
+    pos = nil
+    until pos && valid_pos?(pos)
       puts "Please enter a position on the board (e.g., '3,4')"
       print "> "
 
       begin
-        p = convert_to_position(gets.chomp)
+        pos = parse_pos(gets.chomp)
       rescue
         puts "Invalid position entered (did you use a comma?)"
         puts ""
 
-        p = nil
+        pos = nil
       end
     end
-    p
+    pos
   end
 
-  def get_value
-    v = nil
-    until v && valid_marker?(v)
+  def get_val
+    val = nil
+    until val && valid_val?(val)
       puts "Please enter a value between 1 and 9 (0 to clear the tile)"
       print "> "
-      v = string_to_int(gets.chomp)
+      val = parse_val(gets.chomp)
     end
-    v
+    val
   end
 
-  def convert_to_position(string)
+  def parse_pos(string)
     string.split(",").map { |char| Integer(char) }
   end
 
-  def string_to_int(string)
+  def parse_val(string)
     Integer(string)
   end
 
-  def get_move
-    place_value(get_position, get_value)
-  end
-
-  def place_value(p, v)
-    board[p] = v
+  def play_turn
+    board.render
+    pos = get_pos
+    val = get_val
+    board[pos] = val
   end
 
   def run
-    until game_over? do
-      @board.render
-      get_move 
-    end
+    play_turn until solved?
+    board.render
     puts "Congratulations, you win!"
   end
 
-  def game_over?
-    board.terminate?
+  def solved?
+    board.solved?
   end
 
-  def valid_position?(pos)
+  def valid_pos?(pos)
     pos.is_a?(Array) &&
       pos.length == 2 &&
       pos.all? { |x| x.between?(0, board.size - 1) }
   end
 
-  def valid_marker?(val)
+  def valid_val?(val)
     val.is_a?(Integer) &&
       val.between?(0, 9)
   end
