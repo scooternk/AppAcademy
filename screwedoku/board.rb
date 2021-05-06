@@ -34,6 +34,10 @@ class Board
     tile.value = value
   end
 
+  def rows
+    @grid
+  end
+
   def columns
     rows.transpose
   end
@@ -50,7 +54,6 @@ class Board
     grid.size
   end
 
-  alias_method :rows, :size
 
   def solved?
     rows.all? { |row| solved_set?(row) } &&
