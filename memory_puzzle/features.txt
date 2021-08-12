@@ -1,0 +1,11 @@
+Feature Todos
+* track # turns, inform user upon wining
+* create other tile options beyond playing cards -- letters only, emoji, etc
+    * prompt user to select tile option
+* change color to green when matched on board
+* VS MODE: PvP, PvC
+* cap # of turns for difficulty, or take wager from uer of how many turns it will take them, etc
+
+
+General code Todos
+* utils.rb -- what are best practices for a utility method class in a project? mixins, etc?
