@@ -1,5 +1,3 @@
-# FUTURE VERSIONS:
-# populate with different kinds of cards (alpha only, standard playing deck, etc)
 require_relative 'card.rb'
 require "colorize"
 
@@ -16,7 +14,8 @@ class Board
 
     def populate
         # get range of cards we can use (knowing we must have pairs)
-        cards = playing_cards.sample(@grid.size**2 / 2)
+        #cards = playing_cards.sample(@size**2 / 2)
+        cards = (@size**2 / 2).times.map {playing_cards.sample}
         cards.concat(cards).shuffle! #pair them up and shuffle
         @grid.each {|row| row.map! {|e| Card.new(cards.pop)} }
         true
@@ -27,10 +26,12 @@ class Board
         idx_color = :yellow
 
         # print header
+        # TODO: don't pad the first 0
         (0..@size).each {|i| print "#{i.to_s.rjust(cell_size).colorize(idx_color)} "}
         puts
 
         (1..@size).each do |i|
+            # TODO: don't pad the row headings
             print "#{i.to_s.rjust(cell_size).colorize(idx_color)} "
             (1..@size).each do |j|
                 card = self[[i,j]]    
@@ -54,7 +55,9 @@ class Board
 
     def reveal(guessed_pos)
         card = self[guessed_pos]
-        card.reveal if !card.face_up
+        return nil if card.face_up
+
+        card.reveal 
         card.face_value
     end
 
@@ -78,7 +81,7 @@ class Board
         @grid[r-1][c-1] = value
     end
 
-    private
+    # private
     def playing_cards
         (2..10).to_a.concat(['J','Q','K','A'])
     end

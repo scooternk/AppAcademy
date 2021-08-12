@@ -3,76 +3,68 @@ require_relative 'board.rb'
 class Game
     attr_reader :board, :prev_guess
 
-    def initialize
+    def initialize(size, player)
         @prev_guess = nil
-        @board_size = 4
-        @board = Board.new(4)
+        @board_size = size
+        @board = Board.new(size)
+        @player = player
     end
-
 
     def play
         until over?
-            @board.render
-            
-            pos = get_user_guess
-            @board.reveal(pos)
-            @board.render
-
-            make_guess(pos)
             system("clear")
+            
+            print_board
+            
+            pos = get_guess(@player)
+            puts "Guess #{pos}"
+            val = @board.reveal(pos)
+            @player.receive_revealed_card(pos, val)
+            
+            print_board
+            
+            make_guess(pos)
         end
+        puts
         puts "Congratulations, you win!"
         @board.render
     end
 
-    def get_user_guess
-        puts "Please enter the position of the card to flip (e.g. '2,3')..."
-        pos = gets.chomp
-        have_pos = false
+    def print_board
+        @board.render
+        puts
+    end
 
-        while !have_pos
-            while !valid_pos?(pos)
-                puts "#{pos} is not a valid card position"
-                pos = gets.chomp
-            end
+    def get_guess(player)
+        pos = player.get_input
+        sleep(3)
+        card = @board[pos]
 
-            valid_pos = pos.split(',').map!(&:to_i)
-
-            if @board[valid_pos].face_up
-                puts "Whoops, already matched! Try another position"
-                pos = gets.chomp
-            else
-                have_pos = true
-            end
+        while card.face_up
+            # AI should never end up here -- shouldn't pick face_up cards!
+            puts "Whoops, position #{pos} (#{card.face_value}) is already showing! Try another position"
+            pos = player.get_input
+            card = @board[pos]
         end
-
-        valid_pos
+        pos
     end
 
     def make_guess(pos)
-        sleep_duration = 2
+        sleep_duration = 3
 
         if @prev_guess != nil
             if (@board[pos] != @board[@prev_guess])
                 @board[pos].hide
                 @board[@prev_guess].hide
             else
-                puts "MATCH!"
+                puts "MATCH #{@board[pos].face_value}! #{pos} and #{@prev_guess}"
+                @player.receive_match(pos, @prev_guess)
             end
             @prev_guess = nil
         else
             @prev_guess = pos
         end
         sleep(sleep_duration)
-    end
-
-
-
-    def valid_pos?(pos)
-        r,c = pos.split(',')
-        valid_range = (1..@board_size)
-
-        valid_range.include?(r.to_i) && valid_range.include?(c.to_i)
     end
 
     def over?
