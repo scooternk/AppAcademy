@@ -1,7 +1,9 @@
 require_relative 'game.rb'
 require_relative 'human_player.rb'
 require_relative 'computer_player.rb'
+require_relative 'tile_sets.rb'
 require_relative 'utils.rb'
+require "colorize"
 
 class Launcher
     HUMAN_MODE = 1
@@ -97,7 +99,6 @@ class Launcher
             play = play_again?
             show_welcome = !play
         end
-
     end
 
 end

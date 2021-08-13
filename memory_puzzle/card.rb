@@ -1,8 +1,9 @@
 class Card
-    attr_reader :face_up, :face_value
+    attr_reader :face_up, :face_value, :back_value
 
-    def initialize(face_value)
+    def initialize(face_value, back_value)
         @face_value = face_value
+        @back_value = back_value
         @face_up = false
     end
 
@@ -16,13 +17,12 @@ class Card
 
     def to_s
         return @face_value.to_s if @face_up
-        return ""
+        return back_value
     end
 
     def ==(obj)
         return false if obj.class != Card
         @face_value == obj.face_value
     end
-
 
 end

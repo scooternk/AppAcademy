@@ -1,43 +1,48 @@
 require_relative 'card.rb'
+require_relative 'tile_sets.rb'
 require "colorize"
-
 
 class Board
     attr_reader :size;
 
-    #todo: enforce size must be even number
-    def initialize(size)
+    #todo: enforce size must be even number?
+    def initialize(size, tile_set)
         @size = size
         @grid = Array.new(size) {Array.new(size)}
+        
+        @tile_set = tile_set
+        @tiles = @tile_set.tiles
         populate
     end
 
     def populate
-        # get range of cards we can use (knowing we must have pairs)
-        #cards = playing_cards.sample(@size**2 / 2)
-        cards = (@size**2 / 2).times.map {playing_cards.sample}
+        # get range of tiles we can use (knowing we must have pairs)
+        cards = (@size**2 / 2).times.map {@tiles.sample}
         cards.concat(cards).shuffle! #pair them up and shuffle
-        @grid.each {|row| row.map! {|e| Card.new(cards.pop)} }
+        @grid.each {|row| row.map! {|e| Card.new(cards.pop, @tile_set.hidden_val)} }
         true
     end
 
     def render(show_all=false)
-        cell_size = 2
+        #TODO: fix issue -- once we have rows/columns >10, alignment of grid begins to shift
         idx_color = :yellow
 
         # print header
-        # TODO: don't pad the first 0
-        (0..@size).each {|i| print "#{i.to_s.rjust(cell_size).colorize(idx_color)} "}
+        (0..@size).each {|i| print "#{i.to_s.rjust(2).colorize(idx_color)} "}
         puts
 
         (1..@size).each do |i|
-            # TODO: don't pad the row headings
-            print "#{i.to_s.rjust(cell_size).colorize(idx_color)} "
+            print "#{i.to_s.rjust(2).colorize(idx_color)}"
             (1..@size).each do |j|
                 card = self[[i,j]]    
                 val = card.to_s
                 val = card.face_value if show_all
-                print "#{val.to_s.rjust(cell_size)} "
+                
+                if @tile_set.alphanumeric
+                    print " #{val.to_s.rjust(2)}"
+                else
+                    print "#{val.to_s.rjust(2)}"
+                end
             end
             puts
         end
@@ -80,13 +85,5 @@ class Board
         r, c = pos
         @grid[r-1][c-1] = value
     end
-
-    # private
-    def playing_cards
-        (2..10).to_a.concat(['J','Q','K','A'])
-    end
-
-
-    
 
 end

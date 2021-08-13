@@ -3,11 +3,12 @@ require_relative 'board.rb'
 class Game
     attr_reader :board, :prev_guess
 
-    def initialize(size, player)
+    def initialize(size, player, tile_set=TileSet.emoji_faces)
         @prev_guess = nil
         @board_size = size
-        @board = Board.new(size)
+        @board = Board.new(size, tile_set)
         @player = player
+        @num_guesses = 0
     end
 
     def play
@@ -17,6 +18,8 @@ class Game
             print_board
             
             pos = get_guess(@player)
+            @num_guesses += 1
+
             puts "Guess #{pos}"
             val = @board.reveal(pos)
             @player.receive_revealed_card(pos, val)
@@ -26,7 +29,7 @@ class Game
             make_guess(pos)
         end
         puts
-        puts "Congratulations, you win!"
+        puts "Congratulations, you won in #{@num_guesses} guesses!"
         @board.render
     end
 
