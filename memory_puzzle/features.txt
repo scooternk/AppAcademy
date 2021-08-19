@@ -10,4 +10,5 @@ COMPLETE:
 
 
 General code Todos
+* rendering gets weird as col/row nums increase b/c digits push everything
 * utils.rb -- what are best practices for a utility method class in a project? mixins, etc?
