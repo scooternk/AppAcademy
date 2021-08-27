@@ -128,37 +128,30 @@ def sparse_continents
   # population is less than 25,000,000. Show name, continent and
   # population.
   # Hint: Sometimes rewording the problem can help you see the solution.
-  
-  # find continents where every country has pop less than 25mil
   execute(<<-SQL)
     SELECT
-      name,
-      continent,
-      population
+      name, continent, population
     FROM
-      countries
+      countries c1
     WHERE
-      name in (
-        SELECT
-          name
-        FROM
-          countries
+      -- number of countries for the continent w/pop < 25m
+      (SELECT
+        count(*)
+      FROM
+        countries c2
+      WHERE
+        c1.continent = c2.continent  
+        and c2.population < 25000000)
+      =
+      -- total num countries for the continent
+      (SELECT 
+          count(*) 
+        FROM 
+          countries c3 
         WHERE
-          population < 25000000
-        )
+          c3.continent = c1.continent
+        GROUP BY 
+          c1.continent)
   SQL
-
-  select continent, count(*) 
-  from 
-    countries c1
-      where count(*) =  (
-        select 
-          count(*) from 
-          countries c2
-          where 
-            c2.population < 25000000
-            and c2.continent = c1.continent
-          group by continent
-      )
-      group by continent
+  
 end
