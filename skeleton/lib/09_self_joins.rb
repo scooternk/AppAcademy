@@ -226,21 +226,23 @@ def craiglockhart_to_sighthill
   execute(<<-SQL)
     SELECT
       DISTINCT
-      origin.num,
-      origin.company,
-      xferstop.name,
-      dest.num,
-      dest.company
+      start.num,
+      start.company,
+      transfer.name,
+      finish.num,
+      finish.company
     FROM
-      routes origin
-      JOIN stops originstops on originstops.id = origin.stop_id
-      JOIN routes xorigin on xorigin.num = origin.num and xorigin.company = origin.company
-      JOIN routes xdest on xdest.stop_id = xorigin.stop_id
-      JOIN stops xferstop on xferstop.id = xorigin.stop_id
-      JOIN routes dest on dest.num = xdest.num and dest.company = xdest.company
-      JOIN stops desttops on desttops.id = dest.stop_id
+      routes start
+    JOIN
+      routes to_transfer on to_transfer.num = start.num and to_transfer.company = start.company
+    JOIN
+      stops transfer on to_transfer.stop_id = transfer.id
+    JOIN 
+      routes from_transfer on from_transfer.stop_id = transfer.id
+    JOIN 
+      routes finish on finish.num = from_transfer.num and finish.company = from_transfer.company
     WHERE
-      origin.stop_id = 53
-      and dest.stop_id = 213
+      start.stop_id = 53
+      and finish.stop_id = 213
   SQL
 end
